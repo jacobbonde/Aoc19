@@ -4,7 +4,7 @@ namespace AoC19
 {
     public class Day2
     {
-        public static void Question1(int[] masses)
+        public static void Part1(int[] masses)
         {
             int result = 0;
 
@@ -15,7 +15,7 @@ namespace AoC19
 
             Console.WriteLine($"QUESTION 1: Fuel need: {result}");
         }
-        public static void Question2(int[] masses)
+        public static void Part2(int[] masses)
         {
             int result = 0;
 
