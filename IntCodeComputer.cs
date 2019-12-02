@@ -4,32 +4,33 @@ namespace AoC19
 {
     public class IntCodeComputer
     {
-        public static (int, int[]) Run(int[] programInput)
+        public static (int, int[]) Run(int[] program)
         {
-            var program = new int[programInput.Length];
-            Array.Copy(programInput, program, programInput.Length);
+            int programLength = program.Length;
+            var memory = new int[programLength];
+            Array.Copy(program, memory, program.Length);
 
             int instructionPointer = 0;
-            while(instructionPointer < program.Length)
+            while(instructionPointer < programLength)
             {
-                var instruction = GetInstruction(program, instructionPointer);
+                var instruction = GetInstruction(memory, instructionPointer);
                 instruction.Execute();
                 instructionPointer = instruction.IncreasePointer();
             }
-           return (program[0], program);
+           return (memory[0], memory);
         }
 
-        private static Instruction GetInstruction(int[] program, int instructionPointer)
+        private static Instruction GetInstruction(int[] memory, int instructionPointer)
         {
-            int opCode = program[instructionPointer];
+            int opCode = memory[instructionPointer];
             switch (opCode)
                 {
                     case  1:
-                        return new Add(program, instructionPointer);
+                        return new Add(memory, instructionPointer);
                     case 2:
-                        return new Multiply(program, instructionPointer);
+                        return new Multiply(memory, instructionPointer);
                     case 99:
-                        return new Halt(program);
+                        return new Halt();
                     default:
                     throw new InvalidOperationException();
                 }
@@ -43,21 +44,21 @@ namespace AoC19
 
     public class Add : Instruction 
     {
-        private int[] program;
+        private int[] memory;
         private readonly int instructionPointer;
 
-        public Add(int[] program, int instructionPointer)
+        public Add(int[] memory, int instructionPointer)
         {
-            this.program = program;
+            this.memory = memory;
             this.instructionPointer = instructionPointer;
         }
 
         public void Execute() 
         {
-            int pos1 = program[instructionPointer+1];
-            int pos2 = program[instructionPointer+2];
-            int pos3 = program[instructionPointer+3];
-            program[pos3] = program[pos1] + program[pos2];
+            int address1 = memory[instructionPointer+1];
+            int address2 = memory[instructionPointer+2];
+            int address3 = memory[instructionPointer+3];
+            memory[address3] = memory[address1] + memory[address2];
         }
 
         public int IncreasePointer() 
@@ -68,21 +69,21 @@ namespace AoC19
 
     public class Multiply : Instruction 
     {
-        private int[] program;
+        private int[] memory;
         private readonly int instructionPointer;
 
-        public Multiply(int[] program, int instructionPointer)
+        public Multiply(int[] memory, int instructionPointer)
         {
-            this.program = program;
+            this.memory = memory;
             this.instructionPointer = instructionPointer;
         }
 
         public void Execute() 
         {
-            int pos1 = program[instructionPointer+1];
-            int pos2 = program[instructionPointer+2];
-            int pos3 = program[instructionPointer+3];
-            program[pos3] = program[pos1] * program[pos2];
+            int address1 = memory[instructionPointer+1];
+            int address2 = memory[instructionPointer+2];
+            int address3 = memory[instructionPointer+3];
+            memory[address3] = memory[address1] * memory[address2];
         }
 
         public int IncreasePointer() 
@@ -93,18 +94,11 @@ namespace AoC19
 
     public class Halt : Instruction 
     {
-        private int[] program;
-
-        public Halt(int[] program)
-        {
-            this.program = program;
-        }
-
         public void Execute() {}
 
         public int IncreasePointer()
         {
-            return this.program.Length;
+            return int.MaxValue;
         }
     }
 }
