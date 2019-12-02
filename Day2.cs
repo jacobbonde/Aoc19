@@ -4,13 +4,31 @@ namespace AoC19
 {
     public class Day2
     {
-        public static void Part1(int[] masses)
+        public static void Part1(int[] intCodes)
         {
-            int result = 0;
+            bool halt = false;
+            for (int i = 0; i < intCodes.Length; i = i + 4)
+            {
+                if (halt) {
+                    break;
+                }
 
-            foreach (var mass in masses)
-            {   
-                result += GetFuel(mass);
+                int opCode = intCodes[i];
+
+                switch (opCode)
+                {
+                    case  1:
+                        intCodes[i+3] = intCodes[i+1] + intCodes[i+2];
+                        break;
+                    case 2:
+                        intCodes[i+3] = intCodes[i+1] + intCodes[i+2];
+                        break;
+                    case 99:
+                        halt = true;
+                        break;
+                    default:
+                    throw new InvalidOperationException()
+                };
             }
 
             Console.WriteLine($"QUESTION 1: Fuel need: {result}");
