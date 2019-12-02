@@ -10,8 +10,8 @@ namespace AoC19
         {
             Console.WriteLine("Advent of Code 2019");
 
-            Day1();
-            //Day2();
+            //Day1();
+            Day2();
         }
     
         public static void Day1()
@@ -23,10 +23,10 @@ namespace AoC19
 
         public static void Day2()
         {
-            //int[] input = ReadIntCommaSeparated("day2-input.txt");
-            int[] input = new int[] {1,9,10,3,2,3,11,0,99,30,40,50}
+            int[] input = ReadIntCommaSeparated("day2-input.txt");
+            //int[] input = new int[] {1,1,1,4,99,5,6,0,99};
             AoC19.Day2.Part1(input);
-            AoC19.Day2.Part2(input);
+            //AoC19.Day2.Part2(input);
         }
 
         public static int[] ReadIntLines(string filename)
