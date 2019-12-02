@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Linq;
 
 namespace AoC19
 {
@@ -15,7 +13,8 @@ namespace AoC19
                 result += GetFuel(mass);
             }
 
-            Console.WriteLine($"QUESTION 1: Fuel need: {result}");
+            Console.WriteLine($"PART 1");
+            Console.WriteLine($"\t Fuel need: {result}");
         }
         public static void Part2(int[] masses)
         {
@@ -26,7 +25,8 @@ namespace AoC19
                 result += GetFuelRecursively(mass);
             }
 
-            Console.WriteLine($"QUESTION 2: Fuel need: {result}");
+            Console.WriteLine($"PART 2");
+            Console.WriteLine($"\t Fuel need: {result}");
         }
 
         private static int GetFuel(int mass)

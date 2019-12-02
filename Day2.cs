@@ -4,79 +4,44 @@ namespace AoC19
 {
     public class Day2
     {
-        public static void Part1(int[] intCodes)
+        public static void Part1(int[] program)
         {
-            bool halt = false;
-            int latestValue = 0;
-            for (int i = 0; i < intCodes.Length; i = i + 4)
+            var programCopy = new int[program.Length];
+            Array.Copy(program, programCopy, program.Length);
+
+            programCopy[1] = 12;
+            programCopy[2] = 2;
+
+            var (output,_) = IntCodeComputer.Run(programCopy);
+
+            Console.WriteLine("PART 1");
+            Console.WriteLine($"\t Output: {output}");
+        }
+        public static void Part2(int[] programInput)
+        {
+            Console.WriteLine("PART 2");
+
+            for (int i = 0; i < 100; i++)
             {
-                if (halt) {
-                    break;
-                }
-
-                int opCode = intCodes[i];
-                int pos1 = 0;
-                int pos2 = 0;
-                int pos3 = 0;
-
-                switch (opCode)
+                for (int j = 0; j < 100; j++)
                 {
-                    case  1:
-                        pos1 = intCodes[i+1];
-                        pos2 = intCodes[i+2];
-                        pos3 = intCodes[i+3];
-                        intCodes[pos3] = intCodes[pos1] + intCodes[pos2];
-                        latestValue = intCodes[pos3];
-                        break;
-                    case 2:
-                        pos1 = intCodes[i+1];
-                        pos2 = intCodes[i+2];
-                        pos3 = intCodes[i+3];                   
-                        intCodes[pos3] = intCodes[pos1] * intCodes[pos2];
-                        latestValue = intCodes[pos3];
-                        break;
-                    case 99:
-                        halt = true;
-                        break;
-                    default:
-                    throw new InvalidOperationException();
+                    var program = new int[programInput.Length];
+                    Array.Copy(programInput, program, programInput.Length);
+                    
+                    program[1] = i;
+                    program[2] = j;
+                    var (output, completedProgram) = IntCodeComputer.Run(program);
+
+                    if (output == 19690720) {
+                        Console.WriteLine($"\t Noun: {completedProgram[1]}");
+                        Console.WriteLine($"\t Verb: {completedProgram[2]}");
+                        Console.WriteLine($"\t Answer: {completedProgram[1]*100 + completedProgram[2]}");
+
+                        // Break both loops
+                        i = 101;
+                        j = 101;
+                    }
                 }
-            }
-
-            Console.WriteLine($"QUESTION 1: Stored at 0: {latestValue}");
-            foreach (var item in intCodes)
-            {
-             Console.WriteLine($"deb: {item}");   
-            }
-            
-        }
-        public static void Part2(int[] masses)
-        {
-            int result = 0;
-
-            foreach (var mass in masses)
-            {   
-                result += GetFuelRecursively(mass);
-            }
-
-            Console.WriteLine($"QUESTION 2: Fuel need: {result}");
-        }
-
-        private static int GetFuel(int mass)
-        {
-            return mass/3-2;
-        }
-
-        private static int GetFuelRecursively(int mass)
-        {
-            int fuel = mass/3-2;
-
-            if(fuel > 0) {
-                return fuel + GetFuel(fuel);
-            }
-            else
-            {
-                return 0;
             }
         }
     }

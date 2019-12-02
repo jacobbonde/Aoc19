@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
 
 namespace AoC19
 {
@@ -8,36 +6,39 @@ namespace AoC19
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Advent of Code 2019");
+            Console.WriteLine();
+            Console.WriteLine("# ADVENT OF CODE 2019 #");
+            Console.WriteLine();
 
-            //Day1();
+            Day1();
             Day2();
         }
     
         public static void Day1()
         {
-            int[] masses = ReadIntLines("day1-input.txt");
+            Console.WriteLine("##### DAY 1 #####");
+            int[] masses = Input.ReadIntLines("day1-input.txt");
             AoC19.Day1.Part1(masses);
             AoC19.Day1.Part2(masses);
+            Console.WriteLine();
         }
 
         public static void Day2()
         {
-            int[] input = ReadIntCommaSeparated("day2-input.txt");
-            //int[] input = new int[] {1,1,1,4,99,5,6,0,99};
+            Console.WriteLine("##### DAY 2 #####");
+            int[] input = Input.ReadIntSeparated("day2-input.txt", ',');
             AoC19.Day2.Part1(input);
-            //AoC19.Day2.Part2(input);
+            AoC19.Day2.Part2(input);
+            Console.WriteLine();
         }
 
-        public static int[] ReadIntLines(string filename)
+        public static void Day3()
         {
-            return File.ReadLines(filename).Select(l => int.Parse(l)).ToArray();
-        }
-
-        public static int[] ReadIntCommaSeparated(string filename)
-        {
-
-            return File.ReadLines(filename).SelectMany(l => l.Split(',')).Select(i => int.Parse(i)).ToArray();
+            Console.WriteLine("##### DAY 3 #####");
+            int[] input = Input.ReadIntSeparated("day3-input.txt", ',');
+            AoC19.Day3.Part1(input);
+            AoC19.Day3.Part2(input);
+            Console.WriteLine();
         }
     }
 }
