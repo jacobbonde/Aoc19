@@ -31,7 +31,7 @@ namespace AoC19
             return File.ReadLines(filename).SelectMany(l => l.Split(separator)).Select(i => double.Parse(i)).ToArray();
         }
 
-        public static string[] ReadStringCommaSeparated(string filename, char separator)
+        public static string[] ReadStringSeparated(string filename, char separator)
         {
 
             return File.ReadLines(filename).SelectMany(l => l.Split(separator)).ToArray();
