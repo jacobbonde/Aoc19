@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace AoC19
@@ -8,65 +9,87 @@ namespace AoC19
     {
         public static void Part1(string[] input1, string[] input2)
         {
-            var layout1 = GetPoints(input1);
-            int maxX1 = layout1.Max(p => p.X);
-            int maxY1 = layout1.Max(p => p.Y);
-            int minX1 = layout1.Min(p => p.X);
-            int minY1 = layout1.Min(p => p.Y);
-            
-            Console.WriteLine($"Points 1 {layout1.Length}");
-            var layout2 = GetPoints(input2);
-            int maxX2 = layout2.Max(p => p.X);
-            int maxY2 = layout2.Max(p => p.Y);
-            int minX2 = layout2.Min(p => p.X);
-            int minY2 = layout2.Min(p => p.Y);
+            var sw = new Stopwatch();
+            sw.Start();
 
+            var grid = new Dictionary<Point, List<Point>>();
+            var allPoints = GetPoints(input1, 1).Concat(GetPoints(input2, 2));
 
-            Console.WriteLine($"Points 2 {layout2.Length}");
-
-            Point intersection = new Point{X =int.MaxValue, Y=int.MaxValue};
-
-            int dist = 0;
-            for (int i = 0; i < int.MaxValue; i++)
+            foreach (var item in allPoints)
             {
-                var from1 = layout1.Where(p => p.Distance() == i);
-                var from2 = layout2.Where(p => p.Distance() == i);
-                if (from1.Any(p1 => from2.Any(p2 => IsSame(p1, p2))))
+                if (!grid.ContainsKey(item)) {
+                    grid[item] = new List<Point>();
+                }
+                grid[item].Add(item);
+            }
+
+            int shortestDistance = int.MaxValue;
+            foreach (var item in grid)
+            {
+                if(item.Value.Count() > 1) 
                 {
-                    dist = i;
-                    break;
+                    if (item.Value.Any(p => p.WireNumber == 1) && item.Value.Any(p => p.WireNumber == 2))
+                    {
+                        var wire1 = item.Value.Where(p => p.WireNumber == 1).First().Distance();
+                        shortestDistance = Math.Min(shortestDistance, wire1);
+                    }
                 }
             }
-            
 
-            // foreach (var item1 in layout1)
-            // {
-            //     foreach (var item2 in layout2)
-            //     {
-            //         if (IsSame(item1,item2))
-            //         {
-            //             intersection = intersection.Distance() <= item1.Distance() ? intersection : item1;
-            //         }
-            //     } 
-            // }
+            sw.Stop();
 
             Console.WriteLine("PART 1");
-            Console.WriteLine($"\t Answer: {dist}");
+            Console.WriteLine($"\t Answer: {shortestDistance}");
+            Console.WriteLine($"\t Time: {sw.ElapsedMilliseconds}");
         }
 
-        private static bool IsSame(Point item1, Point item2)
+        public static void Part2(string[] input1, string[] input2)
         {
-            return item1.X == item2.X && item1.Y == item2.Y;
+            var sw = new Stopwatch();
+            sw.Start();
+
+            var grid = new Dictionary<Point, List<Point>>();
+            var allPoints = GetPoints(input1, 1).Concat(GetPoints(input2, 2));
+
+            foreach (var item in allPoints)
+            {
+                if (!grid.ContainsKey(item)) {
+                    grid[item] = new List<Point>();
+                }
+                grid[item].Add(item);
+            }
+            
+            int fewestSteps = int.MaxValue;
+
+            foreach (var item in grid)
+            {
+                if(item.Value.Count() > 1) {
+                    if (item.Value.Any(p => p.WireNumber == 1) && item.Value.Any(p => p.WireNumber == 2))
+                    {
+                        var wire1 = item.Value.Where(p => p.WireNumber == 1).Min(p => p.Step);
+                        var wire2 = item.Value.Where(p => p.WireNumber == 2).Min(p => p.Step);
+
+                        fewestSteps = Math.Min(fewestSteps, wire1+wire2);
+                    }
+                }
+            }
+
+            sw.Stop();
+
+            Console.WriteLine("PART 2");
+            Console.WriteLine($"\t Answer: {fewestSteps}");
+            Console.WriteLine($"\t Time: {sw.ElapsedMilliseconds}");
         }
 
-        private static Point[] GetPoints(string[] input1)
+        private static Point[] GetPoints(string[] input, int wireNumber)
         {
             var result = new List<Point>();
 
             int x = 0;
             int y = 0;
+            int step = 0;
 
-            foreach (var item in input1)
+            foreach (var item in input)
             {
                 char direction = item[0];
                 int length = int.Parse(item.Substring(1));
@@ -77,21 +100,19 @@ namespace AoC19
                     {  
                         y++;
                     }
-                    if (direction == 'D')
+                    else if (direction == 'D')
                     {
                         y--;
                     }
-                    if (direction == 'R') {
+                    else if (direction == 'R') {
                         x++;
                     }
-                    if (direction == 'L') {
+                    else if (direction == 'L') {
                         x--;
                     }
 
-                    result.Add(new Point {  X = x, Y = y});
-
+                    result.Add(new Point(x, y, wireNumber, ++step));
                 }
-                
             }
 
             return result.ToArray();
@@ -99,18 +120,35 @@ namespace AoC19
 
         public struct Point
         {
+            public Point(int x, int y, int wireNumber, int step)
+            {
+                X = x;
+                Y = y;
+                WireNumber = wireNumber;
+                Step = step;
+            }
+
             public int X {get; set;}
             public int Y { get; set;}
+            public int WireNumber { get; set; }
+            public int Step { get; set; }
 
             public int Distance()
             {
                 return Math.Abs(X)+Math.Abs(Y);
             }
-        }
-        public static void Part2(int[] input)
-        {
-            Console.WriteLine("PART 2");
-            Console.WriteLine($"\t Answer:");
+
+            public override bool Equals(object obj)
+            {
+                return obj is Point point &&
+                       X == point.X &&
+                       Y == point.Y;
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(X, Y);
+            }
         }
     }
 }
