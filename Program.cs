@@ -10,8 +10,9 @@ namespace AoC19
             Console.WriteLine("# ADVENT OF CODE 2019 #");
             Console.WriteLine();
 
-            Day1();
-            Day2();
+            // Day1();
+            // Day2();
+            Day3();
         }
     
         public static void Day1()
@@ -35,9 +36,11 @@ namespace AoC19
         public static void Day3()
         {
             Console.WriteLine("##### DAY 3 #####");
-            int[] input = Input.ReadIntSeparated("day3-input.txt", ',');
-            AoC19.Day3.Part1(input);
-            AoC19.Day3.Part2(input);
+            //int[] input = Input.ReadIntSeparated("day3-input.txt", ',');
+            string[] input1 = new[] {"R8","U5","L5","D3"};
+            string[] input2 = new[] {"U7","R6","D4","L4"};
+            AoC19.Day3.Part1(input1, input2);
+            //AoC19.Day3.Part2(input);
             Console.WriteLine();
         }
     }
