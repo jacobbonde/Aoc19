@@ -13,6 +13,8 @@ namespace AoC19
             // Day1();
             // Day2();
             Day3();
+            var  day3b = new Day3B();
+            day3b.Run();
         }
     
         public static void Day1()
