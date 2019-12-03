@@ -26,7 +26,7 @@ namespace AoC19
             sw.Stop();
 
             Console.WriteLine("PART 2");
-            Console.WriteLine($"\t Answer: {}");
+            Console.WriteLine($"\t Answer:");
             Console.WriteLine($"\t Time: {sw.ElapsedMilliseconds}");
         }
     }

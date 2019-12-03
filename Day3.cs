@@ -1,38 +1,27 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 
 namespace AoC19
 {
     internal class Day3
     {
-        public static void Part1(string[] input1, string[] input2)
+        public static void Part1(string[] inputWire1, string[] inputWire2)
         {
             var sw = new Stopwatch();
             sw.Start();
-
-            var grid = new Dictionary<Point, List<Point>>();
-            var allPoints = GetPoints(input1, 1).Concat(GetPoints(input2, 2));
-
-            foreach (var item in allPoints)
-            {
-                if (!grid.ContainsKey(item)) {
-                    grid[item] = new List<Point>();
-                }
-                grid[item].Add(item);
-            }
+            var grid = PlotOnPrunedGrid(inputWire1, inputWire2);
 
             int shortestDistance = int.MaxValue;
-            foreach (var item in grid)
+            foreach (var point in grid)
             {
-                if(item.Value.Count() > 1) 
+                var wireFragments = point.Value;
+                if (Intersects(wireFragments))
                 {
-                    if (item.Value.Any(p => p.WireNumber == 1) && item.Value.Any(p => p.WireNumber == 2))
-                    {
-                        var wire1 = item.Value.Where(p => p.WireNumber == 1).First().Distance();
-                        shortestDistance = Math.Min(shortestDistance, wire1);
-                    }
+                    var distance = wireFragments.Where(p => p.WireNumber == 1).First().Distance();
+                    shortestDistance = Math.Min(shortestDistance, distance);
                 }
             }
 
@@ -43,34 +32,23 @@ namespace AoC19
             Console.WriteLine($"\t Time: {sw.ElapsedMilliseconds}");
         }
 
-        public static void Part2(string[] input1, string[] input2)
+        public static void Part2(string[] inputWire1, string[] inputWire2)
         {
             var sw = new Stopwatch();
             sw.Start();
 
-            var grid = new Dictionary<Point, List<Point>>();
-            var allPoints = GetPoints(input1, 1).Concat(GetPoints(input2, 2));
+            var grid = PlotOnPrunedGrid(inputWire1, inputWire2);
 
-            foreach (var item in allPoints)
-            {
-                if (!grid.ContainsKey(item)) {
-                    grid[item] = new List<Point>();
-                }
-                grid[item].Add(item);
-            }
-            
             int fewestSteps = int.MaxValue;
-
-            foreach (var item in grid)
+            foreach (var point in grid)
             {
-                if(item.Value.Count() > 1) {
-                    if (item.Value.Any(p => p.WireNumber == 1) && item.Value.Any(p => p.WireNumber == 2))
-                    {
-                        var wire1 = item.Value.Where(p => p.WireNumber == 1).Min(p => p.Step);
-                        var wire2 = item.Value.Where(p => p.WireNumber == 2).Min(p => p.Step);
+                var wireFragments = point.Value;
+                if(Intersects(wireFragments)) 
+                {
+                    var wire1StepNumber = wireFragments.Where(p => p.WireNumber == 1).Min(p => p.StepNumber);
+                    var wire2StepNumber = wireFragments.Where(p => p.WireNumber == 2).Min(p => p.StepNumber);
 
-                        fewestSteps = Math.Min(fewestSteps, wire1+wire2);
-                    }
+                    fewestSteps = Math.Min(fewestSteps, wire1StepNumber+wire2StepNumber);
                 }
             }
 
@@ -81,9 +59,31 @@ namespace AoC19
             Console.WriteLine($"\t Time: {sw.ElapsedMilliseconds}");
         }
 
-        private static Point[] GetPoints(string[] input, int wireNumber)
+        private static bool Intersects(List<WireFragment> wireFragments)
         {
-            var result = new List<Point>();
+            return wireFragments.Count() > 1 && (wireFragments.Any(p => p.WireNumber == 1) && wireFragments.Any(p => p.WireNumber == 2));
+        }
+
+        private static Dictionary<Point, List<WireFragment>> PlotOnPrunedGrid(string[] input1, string[] input2)
+        {
+            var grid = new Dictionary<Point, List<WireFragment>>();
+            var allWireFragments = GetWireFragments(input1, 1).Concat(GetWireFragments(input2, 2));
+
+            foreach (var item in allWireFragments)
+            {
+                if (!grid.ContainsKey(item.Point))
+                {
+                    grid[item.Point] = new List<WireFragment>();
+                }
+                grid[item.Point].Add(item);
+            }
+
+            return grid;
+        }
+
+        private static WireFragment[] GetWireFragments(string[] input, int wireNumber)
+        {
+            var result = new List<WireFragment>();
 
             int x = 0;
             int y = 0;
@@ -111,43 +111,40 @@ namespace AoC19
                         x--;
                     }
 
-                    result.Add(new Point(x, y, wireNumber, ++step));
+                    result.Add(new WireFragment(new Point(x, y), wireNumber, ++step));
                 }
             }
 
             return result.ToArray();
         }
 
-        public struct Point
+        public struct WireFragment
         {
-            public Point(int x, int y, int wireNumber, int step)
+            public WireFragment(Point point, int wireNumber, int stepNumber)
             {
-                X = x;
-                Y = y;
+                Point = point;
                 WireNumber = wireNumber;
-                Step = step;
+                StepNumber = stepNumber;
             }
 
-            public int X {get; set;}
-            public int Y { get; set;}
+            public Point Point { get; }
             public int WireNumber { get; set; }
-            public int Step { get; set; }
+            public int StepNumber { get; set; }
 
             public int Distance()
             {
-                return Math.Abs(X)+Math.Abs(Y);
+                return Math.Abs(Point.X)+Math.Abs(Point.Y);
             }
 
             public override bool Equals(object obj)
             {
-                return obj is Point point &&
-                       X == point.X &&
-                       Y == point.Y;
+                return obj is WireFragment wireFragment &&
+                       Point == wireFragment.Point;
             }
 
             public override int GetHashCode()
             {
-                return HashCode.Combine(X, Y);
+                return Point.GetHashCode();
             }
         }
     }
