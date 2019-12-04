@@ -9,38 +9,9 @@ namespace AoC19
         {
             var sw = new Stopwatch();
             sw.Start();
-            int begin = 156218;
-            // int end = begin + 1000;
-            int end = 652527; 
-            int pwCounter = 0;
-            for (int i = begin; i < end; i++)
-            {
-                 string pw = i.ToString();
-                // string pw = "123788";
-                char prev = '0';
-                bool isPair = false;
-                bool isIncreasingOrEven = true;
-                for (int j = 1; j < pw.Length; j++)
-                {
-                    prev = pw[j-1];
-                    char current = pw[j];
-                    
-                    if (!isPair)
-                    {
-                        isPair = prev == current;    
-                    }
-                    if (isIncreasingOrEven)
-                    {
-                        isIncreasingOrEven = prev <= current;    
-                    }                    
-                }
-
-                if (isPair && isIncreasingOrEven)
-                {
-                    pwCounter++;
-                    Console.WriteLine(pw);
-                }
-            }
+            // int begin = 156218;
+            // int end = 652527; 
+            int pwCounter = CountPossiblePasswords(currentGroupCount => currentGroupCount >= 2);
 
             sw.Stop();
 
@@ -49,17 +20,70 @@ namespace AoC19
             Console.WriteLine($"\t Time: {sw.ElapsedMilliseconds}");
         }
 
-        public static void Part2(string[] input)
+        public static void Part2()
         {
             var sw = new Stopwatch();
             sw.Start();
-
+            
+            int pwCounter = CountPossiblePasswords(currentGroupCount => currentGroupCount == 2);
 
             sw.Stop();
 
             Console.WriteLine("PART 2");
-            Console.WriteLine($"\t Answer:");
+            Console.WriteLine($"\t Answer: {pwCounter}");
             Console.WriteLine($"\t Time: {sw.ElapsedMilliseconds}");
+        }
+
+
+        public static int CountPossiblePasswords(Predicate<int> isValidPair)
+        {
+            var sw = new Stopwatch();
+            sw.Start();
+            int begin = 156218;
+            int end = 652527; 
+            int pwCounter = 0;
+            for (int i = begin; i < end; i++)
+            {
+                string pw = i.ToString();
+                char prev = '0';
+                bool foundPair = false;
+                bool isIncreasingOrEven = true;
+                int currentGroupCount = 1;
+                for (int j = 1; j < pw.Length; j++)
+                {
+                    prev = pw[j-1];
+                    char current = pw[j];
+                    
+                    if (current < prev)
+                    {
+                        isIncreasingOrEven = false;
+                        break;
+                    }
+                    else if (current == prev)
+                    {
+                        currentGroupCount++;
+
+                        if (j == pw.Length - 1 && isValidPair(currentGroupCount))
+                        {
+                            foundPair = true;
+                        }
+                    }
+                    else
+                    {
+                        if (isValidPair(currentGroupCount))
+                        {
+                            foundPair = true;
+                        }
+                        currentGroupCount = 1;
+                    }
+                }
+
+                if (foundPair && isIncreasingOrEven)
+                {
+                    pwCounter++;
+                }
+            }
+            return pwCounter;
         }
     }
 }

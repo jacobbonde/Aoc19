@@ -74,7 +74,7 @@ namespace AoC19
             //  string[] input2 = new[] {"U98","R91","D20","R16","D67","R40","U7","R15","U6","R7"};
 
             AoC19.Day4.Part1();
-            // AoC19.Day4.Part2(input);
+            AoC19.Day4.Part2();
             Console.WriteLine();
         }
     }
