@@ -23,7 +23,7 @@ namespace AoC19
             Console.WriteLine($"\t Time: {sw.ElapsedMilliseconds}");
 
             // Part Two. Had to add 2 since I'm not counting 0, 0 on either wire
-            Console.WriteLine(intersections.Min(x => wireA[x] + wireB[x]) + 2); 
+            //Console.WriteLine(intersections.Min(x => wireA[x] + wireB[x]) + 2); 
         }
 
         private int Manhattan(int x, int y)

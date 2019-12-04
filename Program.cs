@@ -12,9 +12,10 @@ namespace AoC19
 
             // Day1();
             // Day2();
-            Day3();
-            var  day3b = new Day3B();
-            day3b.Run();
+            // Day3();
+            // var  day3b = new Day3B();
+            // day3b.Run();
+            Day4();
         }
     
         public static void Day1()
@@ -59,7 +60,7 @@ namespace AoC19
         public static void Day4()
         {
             Console.WriteLine("##### DAY 4 #####");
-            string[] input = Input.ReadStringLines("day4-input.txt");
+            //string[] input = Input.ReadStringLines("day4-input.txt");
             // string[] input1 = input[0].Split(',');
             // string[] input2= input[1].Split(',');
 
@@ -72,8 +73,8 @@ namespace AoC19
             //  string[] input1 = new[] {"R98","U47","R26","D63","R33","U87","L62","D20","R33","U53","R51"};
             //  string[] input2 = new[] {"U98","R91","D20","R16","D67","R40","U7","R15","U6","R7"};
 
-            AoC19.Day4.Part1(input);
-            AoC19.Day4.Part2(input);
+            AoC19.Day4.Part1();
+            // AoC19.Day4.Part2(input);
             Console.WriteLine();
         }
     }
