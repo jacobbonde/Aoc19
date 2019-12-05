@@ -103,11 +103,11 @@ namespace AoC19
         public static void Day5()
         {
             Console.WriteLine("##### DAY 5 #####");
-            //string[] input = Input.ReadStringLines("day5-input.txt");
+            int[] input = Input.ReadIntSeparated("day5-input.txt", ',');
             // string[] input1 = input[0].Split(',');
             // string[] input2= input[1].Split(',');
 
-            //  string[] input1 = new[] {"R8","U5","L5","D3"};
+            //int[] input = new[] {1002,4,3,4,33};
             //  string[] input2 = new[] {"U7","R6","D4","L4"};
 
             // string[] input1 = new[] {"R75","D30","R83","U83","L12","D49","R71","U7","L72"};
@@ -116,8 +116,8 @@ namespace AoC19
             //  string[] input1 = new[] {"R98","U47","R26","D63","R33","U87","L62","D20","R33","U53","R51"};
             //  string[] input2 = new[] {"U98","R91","D20","R16","D67","R40","U7","R15","U6","R7"};
 
-            AoC19.Day5.Part1();
-            AoC19.Day5.Part2();
+            AoC19.Day5.Day5A.Part1(input);
+            //AoC19.Day5.Part2();
             Console.WriteLine();
         }
     }
