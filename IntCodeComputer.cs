@@ -5,7 +5,6 @@ namespace AoC19
     public class IntCodeComputer
     {
         private static int Input;
-        private static int Output;
 
         public static (int, int[]) Run(int[] program, int input)
         {
@@ -23,7 +22,6 @@ namespace AoC19
                 instructionPointer = instruction.IncreasePointer();
             }
 
-           // Console.WriteLine($"Output: {Output}");
            return (memory[0], memory);
         }
 
@@ -138,118 +136,119 @@ namespace AoC19
 
     public class Store : Instruction 
     {
-        public Store(int[] memory, int instructionPointer, int opCode)
-            : base(memory, instructionPointer, opCode, 1)
-        {}
+            public Store(int[] memory, int instructionPointer, int opCode)
+                : base(memory, instructionPointer, opCode, 1)
+            {}
 
-        public override void Execute() 
-        {
-                int v = RawParameter(1);
-                memory[v] = Input;
-        }
-        }
-        public class Retrieve : Instruction 
-        {
-
-        public Retrieve(int[] memory, int instructionPointer, int opCode)
-            : base(memory, instructionPointer, opCode, 1)
-        {}
-
-        public override void Execute() 
-        {
-            Output = memory[RawParameter(1)];
-            Console.WriteLine($"Output: {Output}");
-        }
-    }
-
-    public class JumpIfTrue : Instruction 
-    {
-        public JumpIfTrue(int[] memory, int instructionPointer, int opCode)
-        : base(memory, instructionPointer, opCode, 2)
-        {}
-
-        public override void Execute() 
-        {
-            int param1 = ValueFromParameter(1);
-            if(param1 != 0) 
+            public override void Execute() 
             {
-                instructionPointer = ValueFromParameter(2);
+                    int v = RawParameter(1);
+                    memory[v] = Input;
             }
-            else {
-                instructionPointer = base.IncreasePointer();
             }
-        }
-
-        public override int IncreasePointer() 
-        {
-            return instructionPointer;
-        }
-    }
-
-    public class JumpIfFalse : Instruction 
-    {
-        public JumpIfFalse(int[] memory, int instructionPointer, int opCode)
-        : base(memory, instructionPointer, opCode, 2)
-        {}
-
-        public override void Execute() 
-        {
-            int param1 = ValueFromParameter(1);
-            if(param1 == 0) 
+            public class Retrieve : Instruction 
             {
-                instructionPointer = ValueFromParameter(2);
+
+            public Retrieve(int[] memory, int instructionPointer, int opCode)
+                : base(memory, instructionPointer, opCode, 1)
+            {}
+
+            public override void Execute() 
+            {
+                var output = memory[RawParameter(1)];
+                Console.WriteLine($"Output: {output}");
             }
-            else {
-                instructionPointer = base.IncreasePointer();
+        }
+
+        public class JumpIfTrue : Instruction 
+        {
+            public JumpIfTrue(int[] memory, int instructionPointer, int opCode)
+            : base(memory, instructionPointer, opCode, 2)
+            {}
+
+            public override void Execute() 
+            {
+                int param1 = ValueFromParameter(1);
+                if(param1 != 0) 
+                {
+                    instructionPointer = ValueFromParameter(2);
+                }
+                else {
+                    instructionPointer = base.IncreasePointer();
+                }
+            }
+
+            public override int IncreasePointer() 
+            {
+                return instructionPointer;
             }
         }
 
-        public override int IncreasePointer() 
+        public class JumpIfFalse : Instruction 
         {
-            return instructionPointer;
+            public JumpIfFalse(int[] memory, int instructionPointer, int opCode)
+            : base(memory, instructionPointer, opCode, 2)
+            {}
+
+            public override void Execute() 
+            {
+                int param1 = ValueFromParameter(1);
+                if(param1 == 0) 
+                {
+                    instructionPointer = ValueFromParameter(2);
+                }
+                else {
+                    instructionPointer = base.IncreasePointer();
+                }
+            }
+
+            public override int IncreasePointer() 
+            {
+                return instructionPointer;
+            }
         }
-    }
 
-    public class LessThan : Instruction 
-    {
-        public LessThan(int[] memory, int instructionPointer, int opCode)
-            : base(memory, instructionPointer, opCode, 3)
-        {}
-
-        public override void Execute() 
-        {            
-            int value1 = ValueFromParameter(1);
-            int value2 = ValueFromParameter(2);
-
-            memory[RawParameter(3)] = value1< value2 ? 1 : 0;
-        }
-    }
-
-    public class EqualTo : Instruction 
-    {
-        public EqualTo(int[] memory, int instructionPointer, int opCode)
-            : base(memory, instructionPointer, opCode, 3)
-        {}
-
-        public override void Execute() 
-        {            
-            int value1 = ValueFromParameter(1);
-            int value2 = ValueFromParameter(2);
-
-            memory[RawParameter(3)] = value1 == value2 ? 1 : 0;
-        }
-    }
-
-    public class Halt : Instruction 
-    {
-        public Halt() : base(null, 0, 0, 0)
-        {}
-
-        public override void Execute() {}
-
-        public override int IncreasePointer()
+        public class LessThan : Instruction 
         {
-            return int.MaxValue;
+            public LessThan(int[] memory, int instructionPointer, int opCode)
+                : base(memory, instructionPointer, opCode, 3)
+            {}
+
+            public override void Execute() 
+            {            
+                int value1 = ValueFromParameter(1);
+                int value2 = ValueFromParameter(2);
+
+                memory[RawParameter(3)] = value1< value2 ? 1 : 0;
+            }
         }
-    }}
+
+        public class EqualTo : Instruction 
+        {
+            public EqualTo(int[] memory, int instructionPointer, int opCode)
+                : base(memory, instructionPointer, opCode, 3)
+            {}
+
+            public override void Execute() 
+            {            
+                int value1 = ValueFromParameter(1);
+                int value2 = ValueFromParameter(2);
+
+                memory[RawParameter(3)] = value1 == value2 ? 1 : 0;
+            }
+        }
+
+        public class Halt : Instruction 
+        {
+            public Halt() : base(null, 0, 0, 0)
+            {}
+
+            public override void Execute() {}
+
+            public override int IncreasePointer()
+            {
+                return int.MaxValue;
+            }
+        }
+    }
 }

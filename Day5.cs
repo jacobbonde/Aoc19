@@ -18,8 +18,6 @@ namespace AoC19
 
             sw.Stop();
 
-            // Console.WriteLine("PART 1");
-//            Console.WriteLine($"\t Output: {output}")
             Console.WriteLine($"\t Time: {sw.ElapsedMilliseconds}");
         }
 
@@ -35,9 +33,6 @@ namespace AoC19
             var (output,_) = IntCodeComputer.Run(programCopy, input);
 
             sw.Stop();
-
-            Console.WriteLine("PART 2");
-//            Console.WriteLine($"\t Answer: ");
             Console.WriteLine($"\t Time: {sw.ElapsedMilliseconds}");
         }
     }
