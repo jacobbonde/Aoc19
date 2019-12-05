@@ -12,7 +12,7 @@ namespace AoC19
             programCopy[1] = 12;
             programCopy[2] = 2;
 
-            var (output,_) = IntCodeComputer.Run(programCopy);
+            var (output,_) = IntCodeComputer.Run(programCopy,0);
 
             Console.WriteLine("PART 1");
             Console.WriteLine($"\t Output: {output}");
@@ -30,7 +30,7 @@ namespace AoC19
                     
                     program[1] = i;
                     program[2] = j;
-                    var (output, completedProgram) = IntCodeComputer.Run(program);
+                    var (output, completedProgram) = IntCodeComputer.Run(program, 0);
 
                     if (output == 19690720) {
                         Console.WriteLine($"\t Noun: {completedProgram[1]}");

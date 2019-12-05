@@ -1,39 +1,43 @@
 using System;
 using System.Diagnostics;
 
-namespace AoC19.Day5
+namespace AoC19
 {
-    internal class Day5A
+    internal class Day5
     {
         public static void Part1(int[] program)
         {
+            Console.WriteLine("PART 1");
             var sw = new Stopwatch();
             sw.Start();
 
             var programCopy = new int[program.Length];
             Array.Copy(program, programCopy, program.Length);
 
-            var (output,_) = IntCodeComputerDay5.Run(programCopy, 1);
+            var (output,_) = IntCodeComputer.Run(programCopy, 1);
 
-            Console.WriteLine("PART 1");
-            Console.WriteLine($"\t Output: {output}");
-            
             sw.Stop();
 
-            Console.WriteLine("PART 1");
-            Console.WriteLine($"\t Answer: ");
+            // Console.WriteLine("PART 1");
+//            Console.WriteLine($"\t Output: {output}")
             Console.WriteLine($"\t Time: {sw.ElapsedMilliseconds}");
         }
 
-        public static void Part2()
+        public static void Part2(int[] program, int input)
         {
+            Console.WriteLine("PART 2");
             var sw = new Stopwatch();
             sw.Start();
+
+            var programCopy = new int[program.Length];
+            Array.Copy(program, programCopy, program.Length);
+
+            var (output,_) = IntCodeComputer.Run(programCopy, input);
 
             sw.Stop();
 
             Console.WriteLine("PART 2");
-            Console.WriteLine($"\t Answer: ");
+//            Console.WriteLine($"\t Answer: ");
             Console.WriteLine($"\t Time: {sw.ElapsedMilliseconds}");
         }
     }
