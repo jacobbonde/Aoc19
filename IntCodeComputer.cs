@@ -57,87 +57,94 @@ namespace AoC19
         }
     
 
-    public abstract class Instruction {
-        protected int[] memory;
-        protected int instructionPointer;
-
-        protected int[] parameters;
-        protected int[] parameterModes;
-        public Instruction(int[] memory, int instructionPointer, int opCode, int numberOfParameters)
+        abstract class Instruction 
         {
-            this.memory = memory;
-            this.instructionPointer = instructionPointer;
+            protected int[] memory;
+            protected int instructionPointer;
 
-            this.parameterModes = new[] 
+            protected int[] parameters;
+            protected int[] parameterModes;
+            public Instruction(int[] memory, int instructionPointer, int opCode, int numberOfParameters)
             {
-                (opCode / 100) % 10,
-                (opCode / 1000) % 10,
-                (opCode / 10000)
-            };
+                this.memory = memory;
+                this.instructionPointer = instructionPointer;
 
-            this.SetParameters(numberOfParameters);
-        }
-        public abstract void Execute();
-        public virtual int IncreasePointer()
-        {
-            return instructionPointer + parameters.Length + 1;
-        }
+                this.parameterModes = new[] 
+                {
+                    (opCode / 100) % 10,
+                    (opCode / 1000) % 10,
+                    (opCode / 10000)
+                };
 
-        protected int ValueFromParameter(int parameterNumber) 
-        {
-            int index = parameterNumber-1;
-            int parameter = parameters[index];
-            return parameterModes[index] == 0 ? memory[parameter] : parameter;
-        }
-        protected int RawParameter(int parameterNumber) 
-        {
-            return parameters[parameterNumber - 1];
-        }
-        private void SetParameters(int numberOfParameters)
-        {
-            this.parameters = new int[numberOfParameters];
-
-            for (int i = 0; i < numberOfParameters; i++)
+                this.SetParameters(numberOfParameters);
+            }
+            public abstract void Execute();
+            public virtual int IncreasePointer()
             {
-                this.parameters[i] = memory[instructionPointer+i+1];
+                return instructionPointer + parameters.Length + 1;
+            }
+
+            protected int ValueFromParameter(int parameterNumber) 
+            {
+                int index = parameterNumber-1;
+                int parameter = parameters[index];
+                return parameterModes[index] == 0 ? memory[parameter] : parameter;
+            }
+            protected int RawParameter(int parameterNumber) 
+            {
+                return parameters[parameterNumber - 1];
+            }
+            private void SetParameters(int numberOfParameters)
+            {
+                this.parameters = new int[numberOfParameters];
+
+                for (int i = 0; i < numberOfParameters; i++)
+                {
+                    this.parameters[i] = memory[instructionPointer+i+1];
+                }
             }
         }
-    }
 
-    public class Add : Instruction 
-    {
-        public Add(int[] memory, int instructionPointer, int opCode)
-            : base(memory, instructionPointer, opCode, 3)
-        {}
-
-        public override void Execute() 
-        {            
-            int addend1 = ValueFromParameter(1);
-            int addend2 = ValueFromParameter(2);
-
-            memory[RawParameter(3)] = addend1 + addend2;
-        }
-    }
-
-    public class Multiply : Instruction 
-    {
-        public Multiply(int[] memory, int instructionPointer, int opCode)
-            : base(memory, instructionPointer, opCode, 3)
-        {}
-
-        public override void Execute() 
+        class Add : Instruction 
         {
-            int factor1 = ValueFromParameter(1);
-            int factor2 = ValueFromParameter(2);
+            private const int NumberOfParameters = 3;
 
-            memory[RawParameter(3)] = factor1 * factor2;
+            public Add(int[] memory, int instructionPointer, int opCode)
+                : base(memory, instructionPointer, opCode, NumberOfParameters)
+            {}
+
+            public override void Execute() 
+            {            
+                int addend1 = ValueFromParameter(1);
+                int addend2 = ValueFromParameter(2);
+
+                memory[RawParameter(3)] = addend1 + addend2;
+            }
         }
-    }
 
-    public class Store : Instruction 
-    {
+        class Multiply : Instruction 
+        {
+            private const int NumberOfParameters = 3;
+
+            public Multiply(int[] memory, int instructionPointer, int opCode)
+                : base(memory, instructionPointer, opCode, NumberOfParameters)
+            {}
+
+            public override void Execute() 
+            {
+                int factor1 = ValueFromParameter(1);
+                int factor2 = ValueFromParameter(2);
+
+                memory[RawParameter(3)] = factor1 * factor2;
+            }
+        }
+
+        class Store : Instruction 
+        {
+            private const int NumberOfParameters = 1;
+
             public Store(int[] memory, int instructionPointer, int opCode)
-                : base(memory, instructionPointer, opCode, 1)
+                : base(memory, instructionPointer, opCode, NumberOfParameters)
             {}
 
             public override void Execute() 
@@ -145,12 +152,13 @@ namespace AoC19
                     int v = RawParameter(1);
                     memory[v] = Input;
             }
-            }
-            public class Retrieve : Instruction 
-            {
+        }
+        class Retrieve : Instruction 
+        {
+            private const int NumberOfParameters = 1;
 
             public Retrieve(int[] memory, int instructionPointer, int opCode)
-                : base(memory, instructionPointer, opCode, 1)
+                : base(memory, instructionPointer, opCode, NumberOfParameters)
             {}
 
             public override void Execute() 
@@ -160,22 +168,18 @@ namespace AoC19
             }
         }
 
-        public class JumpIfTrue : Instruction 
+        class JumpIfTrue : Instruction 
         {
+            private const int NumberOfParameters = 2;
+
             public JumpIfTrue(int[] memory, int instructionPointer, int opCode)
-            : base(memory, instructionPointer, opCode, 2)
+            : base(memory, instructionPointer, opCode, NumberOfParameters)
             {}
 
             public override void Execute() 
             {
                 int param1 = ValueFromParameter(1);
-                if(param1 != 0) 
-                {
-                    instructionPointer = ValueFromParameter(2);
-                }
-                else {
-                    instructionPointer = base.IncreasePointer();
-                }
+                instructionPointer = param1 != 0 ? ValueFromParameter(2) : base.IncreasePointer();
             }
 
             public override int IncreasePointer() 
@@ -184,7 +188,7 @@ namespace AoC19
             }
         }
 
-        public class JumpIfFalse : Instruction 
+        class JumpIfFalse : Instruction 
         {
             public JumpIfFalse(int[] memory, int instructionPointer, int opCode)
             : base(memory, instructionPointer, opCode, 2)
@@ -193,13 +197,7 @@ namespace AoC19
             public override void Execute() 
             {
                 int param1 = ValueFromParameter(1);
-                if(param1 == 0) 
-                {
-                    instructionPointer = ValueFromParameter(2);
-                }
-                else {
-                    instructionPointer = base.IncreasePointer();
-                }
+                instructionPointer = param1 == 0 ? ValueFromParameter(2) : base.IncreasePointer();
             }
 
             public override int IncreasePointer() 
@@ -208,7 +206,7 @@ namespace AoC19
             }
         }
 
-        public class LessThan : Instruction 
+        class LessThan : Instruction 
         {
             public LessThan(int[] memory, int instructionPointer, int opCode)
                 : base(memory, instructionPointer, opCode, 3)
@@ -219,11 +217,11 @@ namespace AoC19
                 int value1 = ValueFromParameter(1);
                 int value2 = ValueFromParameter(2);
 
-                memory[RawParameter(3)] = value1< value2 ? 1 : 0;
+                memory[RawParameter(3)] = value1 < value2 ? 1 : 0;
             }
         }
 
-        public class EqualTo : Instruction 
+        class EqualTo : Instruction 
         {
             public EqualTo(int[] memory, int instructionPointer, int opCode)
                 : base(memory, instructionPointer, opCode, 3)
@@ -238,7 +236,7 @@ namespace AoC19
             }
         }
 
-        public class Halt : Instruction 
+        class Halt : Instruction 
         {
             public Halt() : base(null, 0, 0, 0)
             {}
