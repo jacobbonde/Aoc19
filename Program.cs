@@ -111,8 +111,8 @@ namespace AoC19
 
         public static void Day6()
         {
-            Console.WriteLine("##### DAY 5 #####");
-            int[] input = Input.ReadIntSeparated("day5-input.txt", ',');
+            Console.WriteLine("##### DAY 6 #####");
+            string[] input = Input.ReadStringLines("day6-input.txt");
 
             //int[] part1Test = new[] {1002,4,3,4,33};
 
@@ -124,8 +124,8 @@ namespace AoC19
             // int[] jumpPosTest = new[] {3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9};
             // int[] jumpImmTest = new[] {3,3,1105,-1,9,1101,0,0,12,4,12,99,1};
 
-            AoC19.Day6.Part1(input);
-            AoC19.Day6.Part2(input);
+            AoC19.Day6.Part1And2(input);
+            //AoC19.Day6.Part2(input);
             Console.WriteLine();
         }
     }
