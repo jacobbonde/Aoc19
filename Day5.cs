@@ -14,7 +14,8 @@ namespace AoC19
             var programCopy = new int[program.Length];
             Array.Copy(program, programCopy, program.Length);
 
-            var (output,_) = IntCodeComputer.Run(programCopy, 1);
+            var computer = new IntCodeComputer();
+            var (output,_) = computer.Run(programCopy, 1);
 
             sw.Stop();
 
@@ -30,7 +31,8 @@ namespace AoC19
             var programCopy = new int[program.Length];
             Array.Copy(program, programCopy, program.Length);
 
-            var (output,_) = IntCodeComputer.Run(programCopy, input);
+            var computer = new IntCodeComputer();
+            var (output,_) = computer.Run(programCopy, input);
 
             sw.Stop();
             Console.WriteLine($"\t Time: {sw.ElapsedMilliseconds}");
