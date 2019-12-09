@@ -6,7 +6,7 @@ namespace AoC19
     {
         public static void Part1(int[] program)
         {
-            var programCopy = new int[program.Length];
+            var programCopy = new long[program.Length];
             Array.Copy(program, programCopy, program.Length);
 
             programCopy[1] = 12;
@@ -26,7 +26,7 @@ namespace AoC19
             {
                 for (int j = 0; j < 100; j++)
                 {
-                    var program = new int[programInput.Length];
+                    var program = new long[programInput.Length];
                     Array.Copy(programInput, program, programInput.Length);
                     
                     program[1] = i;

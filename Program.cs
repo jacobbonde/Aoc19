@@ -22,7 +22,8 @@ namespace AoC19
             // Day5();
             // Day6();
             //Day7();
-            Day8();
+            //Day8();
+            Day9();
 
             sw.Stop();
             Console.WriteLine($"Total Time: {sw.ElapsedMilliseconds}");
@@ -156,7 +157,7 @@ namespace AoC19
             // int[] jumpImmTest = new[] {3,3,1105,-1,9,1101,0,0,12,4,12,99,1};
 
             //AoC19.Day7.Part1(program);
-            AoC19.Day7.Part2(program);
+            //AoC19.Day7.Part2(program);
             Console.WriteLine();
         }
 
@@ -179,6 +180,26 @@ namespace AoC19
 
             AoC19.Day8.Part1(imageData);
             //AoC19.Day7.Part2(imageData);
+            Console.WriteLine();
+        }
+
+        public static void Day9()
+        {
+            Console.WriteLine("##### DAY 9 #####");
+            long[] program = Input.ReadLongSeparated("day9-input.txt", ',');
+
+             //int[] part1Test1 = new[] {109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99};
+
+             //int[] part1Test2 = new[] {1102,34915192,34915192,7,4,7,99,0};
+             //long[] part1Test3 = new[] {104,1125899906842624,99};
+            //int[] eqImmTest = new[] {3,3,1108,-1,8,3,4,3,99};
+            //int[] ltImmTest = new[] {3,3,1107,-1,8,3,4,3,99};
+
+            // int[] jumpPosTest = new[] {3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9};
+            // int[] jumpImmTest = new[] {3,3,1105,-1,9,1101,0,0,12,4,12,99,1};
+
+            //AoC19.Day9.Part1(program);
+            AoC19.Day9.Part2(program);
             Console.WriteLine();
         }
     }

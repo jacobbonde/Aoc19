@@ -15,12 +15,12 @@ namespace AoC19
             var sw = new Stopwatch();
             sw.Start();
 
-            var programCopy = new int[program.Length];
+            var programCopy = new long[program.Length];
             Array.Copy(program, programCopy, program.Length);
 
             var  phaseSettingSequences = CreatePhaseSettingSequences(new [] {0,1,2,3,4}); 
 
-            var largestValue = int.MinValue;
+            var largestValue = long.MinValue;
 
             foreach (var item in phaseSettingSequences)
             {
@@ -88,17 +88,17 @@ namespace AoC19
             var sw = new Stopwatch();
             sw.Start();
 
-            var programCopy = new int[program.Length];
+            var programCopy = new long[program.Length];
             Array.Copy(program, programCopy, program.Length);
 
             var  phaseSettingSequences = CreatePhaseSettingSequences(new [] {5,6,7,8,9}); 
 
-            var largestValue = int.MinValue;
+            var largestValue = long.MinValue;
 
             foreach (var phases in phaseSettingSequences)
             {
-                var inputA = new BlockingCollection<int>();
-                var outputA = new BlockingCollection<int>();
+                var inputA = new BlockingCollection<long>();
+                var outputA = new BlockingCollection<long>();
                 var ampA = Task.Run(() =>
                     {
                         inputA.Add(0);
@@ -107,7 +107,7 @@ namespace AoC19
                     }
                 );
 
-                var outputB = new BlockingCollection<int>();
+                var outputB = new BlockingCollection<long>();
                 var ampB = Task.Run(() =>
                     {                    
                         var computerB = new IntCodeComputer(outputA, outputB);
@@ -115,7 +115,7 @@ namespace AoC19
                     }
                 );
 
-                var outputC = new BlockingCollection<int>();
+                var outputC = new BlockingCollection<long>();
                 var ampC = Task.Run(() =>
                     {
                         var computerC = new IntCodeComputer(outputB, outputC);
@@ -123,7 +123,7 @@ namespace AoC19
                     }
                 );
 
-                var outputD = new BlockingCollection<int>();
+                var outputD = new BlockingCollection<long>();
                 var ampD = Task.Run(() =>
                     {  
                         var computerD = new IntCodeComputer(outputC, outputD);

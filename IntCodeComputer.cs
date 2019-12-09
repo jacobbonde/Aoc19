@@ -7,28 +7,29 @@ namespace AoC19
 {
     public class IntCodeComputer
     {
-        private Queue<int> InitialInput;
-        private BlockingCollection<int> Input;
-        public BlockingCollection<int> Output;
-        private int[] memory;
-        private int instructionPointer;
+        private Queue<long> InitialInput;
+        private BlockingCollection<long> Input;
+        public BlockingCollection<long> Output;
+        private long[] memory = new long[10000];
+        private long instructionPointer;
+        protected long relativeBase;
 
-        public IntCodeComputer(BlockingCollection<int> input = null, BlockingCollection<int> output = null)
+        public IntCodeComputer(BlockingCollection<long> input = null, BlockingCollection<long> output = null)
         {
-            Input = input ?? new BlockingCollection<int>();
-            Output = output ?? new BlockingCollection<int>();
+            Input = input ?? new BlockingCollection<long>();
+            Output = output ?? new BlockingCollection<long>();
             
         }
 
-        public (int, int[]) Run(int[] program, params int[] input)
+        public (long, long[]) Run(long[] program, params long[] input)
         {
-            InitialInput = new Queue<int>(input);
+            InitialInput = new Queue<long>(input);
 
             int programLength = program.Length;
-            memory = new int[programLength];
+            //memory = new int[programLength];
             Array.Copy(program, memory, program.Length);
 
-            while(instructionPointer < programLength)
+            while(instructionPointer > -1)
             {
                 var instruction = GetInstruction(memory, instructionPointer);
                 instruction.Execute();
@@ -38,9 +39,9 @@ namespace AoC19
            return (memory[0], memory);
         }
 
-        private Instruction GetInstruction(int[] memory, int instructionPointer)
+        private Instruction GetInstruction(long[] memory, long instructionPointer)
         {
-            int opCode = memory[instructionPointer];
+            int opCode = (int)memory[instructionPointer];
 
             var intructionCode = opCode % 100;
 
@@ -51,9 +52,9 @@ namespace AoC19
                     case 2:
                         return new Multiply(this, opCode);
                     case 3:
-                        return new Store(this, opCode);
+                        return new ReadFromInput(this, opCode);
                     case 4:
-                        return new Retrieve(this, opCode);
+                        return new WriteToOutput(this, opCode);
                     case 5:
                         return new JumpIfTrue(this, opCode);
                     case 6:
@@ -62,6 +63,8 @@ namespace AoC19
                         return new LessThan(this, opCode);
                     case 8:
                         return new EqualTo(this, opCode);
+                    case 9:
+                        return new RelativeBaseOffset(this, opCode);
                     case 99:
                         return new Halt(this);
                     default:
@@ -73,10 +76,10 @@ namespace AoC19
         abstract class Instruction 
         {
             protected IntCodeComputer computer;
-            protected int[] memory;
-            protected int instructionPointer;   
-            protected int[] parameters;
-            protected int[] parameterModes;
+            protected long[] memory;
+            protected long instructionPointer;
+            protected long[] parameters;
+            private ParameterMode[] parameterModes;
             public Instruction(IntCodeComputer computer, int opCode, int numberOfParameters)
             {
                 this.computer = computer;
@@ -85,37 +88,67 @@ namespace AoC19
 
                 this.parameterModes = new[] 
                 {
-                    (opCode / 100) % 10,
-                    (opCode / 1000) % 10,
-                    (opCode / 10000)
+                    (ParameterMode)((opCode / 100) % 10),
+                    (ParameterMode)((opCode / 1000) % 10),
+                    (ParameterMode)((opCode / 10000))
                 };
 
                 this.SetParameters(numberOfParameters);
             }
             public abstract void Execute();
-            public virtual int IncreasePointer()
+            public virtual long IncreasePointer()
             {
                 return instructionPointer + parameters.Length + 1;
             }
 
-            protected int ValueFromParameter(int parameterNumber) 
+            protected long ValueFromParameter(int parameterNumber) 
             {
                 int index = parameterNumber-1;
-                int parameter = parameters[index];
-                return parameterModes[index] == 0 ? memory[parameter] : parameter;
+                long parameter = parameters[index];
+                
+                switch (parameterModes[index])
+                {
+                    case ParameterMode.Position:
+                        return memory[parameter];
+                    case ParameterMode.Immediate:
+                        return parameter;
+                    case ParameterMode.Relative:
+                        return memory[parameter + computer.relativeBase];
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
-            protected int RawParameter(int parameterNumber) 
+
+            protected long AddressFromParameter(int parameterNumber) 
             {
-                return parameters[parameterNumber - 1];
+                int index = parameterNumber-1;
+                long parameter = parameters[index];
+                
+                switch (parameterModes[index])
+                {
+                    case ParameterMode.Position:
+                        return parameter;
+                    case ParameterMode.Relative:
+                        return parameter + computer.relativeBase;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
+
             private void SetParameters(int numberOfParameters)
             {
-                this.parameters = new int[numberOfParameters];
+                this.parameters = new long[numberOfParameters];
 
                 for (int i = 0; i < numberOfParameters; i++)
                 {
                     this.parameters[i] = memory[instructionPointer+i+1];
                 }
+            }
+
+            enum ParameterMode {
+                Position = 0,
+                Immediate = 1,
+                Relative = 2
             }
         }
 
@@ -129,10 +162,10 @@ namespace AoC19
 
             public override void Execute() 
             {            
-                int addend1 = ValueFromParameter(1);
-                int addend2 = ValueFromParameter(2);
+                long addend1 = ValueFromParameter(1);
+                long addend2 = ValueFromParameter(2);
 
-                memory[RawParameter(3)] = addend1 + addend2;
+                memory[AddressFromParameter(3)] = addend1 + addend2;
             }
         }
 
@@ -146,26 +179,26 @@ namespace AoC19
 
             public override void Execute() 
             {
-                int factor1 = ValueFromParameter(1);
-                int factor2 = ValueFromParameter(2);
+                long factor1 = ValueFromParameter(1);
+                long factor2 = ValueFromParameter(2);
 
-                memory[RawParameter(3)] = factor1 * factor2;
+                memory[AddressFromParameter(3)] = factor1 * factor2;
             }
         }
 
-        class Store : Instruction 
+        class ReadFromInput : Instruction 
         {
             private const int NumberOfParameters = 1;
 
-            public Store(IntCodeComputer computer, int opCode)
+            public ReadFromInput(IntCodeComputer computer, int opCode)
                 : base(computer, opCode, NumberOfParameters)
             {}
 
             public override void Execute() 
             {
                 Console.WriteLine($"{Task.CurrentId} waiting for input");
-                int address = RawParameter(1);
-                int inputValue;
+                long address = AddressFromParameter(1);
+                long inputValue;
                 if(!computer.InitialInput.TryDequeue(out inputValue))
                 {
                     inputValue = computer.Input.Take();
@@ -173,19 +206,19 @@ namespace AoC19
                 memory[address] = inputValue;
             }
         }
-        class Retrieve : Instruction 
+        class WriteToOutput : Instruction 
         {
             private const int NumberOfParameters = 1;
 
-            public Retrieve(IntCodeComputer computer, int opCode)
+            public WriteToOutput(IntCodeComputer computer, int opCode)
                 : base(computer, opCode, NumberOfParameters)
             {}
 
             public override void Execute() 
             {
-                var output = memory[RawParameter(1)];
+                var output = ValueFromParameter(1);
                 computer.Output.Add(output);
-                //Console.WriteLine($"Output: {output}");
+                Console.WriteLine($"Output: {output}");
             }
         }
 
@@ -199,11 +232,11 @@ namespace AoC19
 
             public override void Execute() 
             {
-                int param1 = ValueFromParameter(1);
+                long param1 = ValueFromParameter(1);
                 instructionPointer = param1 != 0 ? ValueFromParameter(2) : base.IncreasePointer();
             }
 
-            public override int IncreasePointer() 
+            public override long IncreasePointer() 
             {
                 return instructionPointer;
             }
@@ -217,11 +250,11 @@ namespace AoC19
 
             public override void Execute() 
             {
-                int param1 = ValueFromParameter(1);
+                long param1 = ValueFromParameter(1);
                 instructionPointer = param1 == 0 ? ValueFromParameter(2) : base.IncreasePointer();
             }
 
-            public override int IncreasePointer() 
+            public override long IncreasePointer() 
             {
                 return instructionPointer;
             }
@@ -235,10 +268,10 @@ namespace AoC19
 
             public override void Execute() 
             {            
-                int value1 = ValueFromParameter(1);
-                int value2 = ValueFromParameter(2);
+                long value1 = ValueFromParameter(1);
+                long value2 = ValueFromParameter(2);
 
-                memory[RawParameter(3)] = value1 < value2 ? 1 : 0;
+                memory[AddressFromParameter(3)] = value1 < value2 ? 1 : 0;
             }
         }
 
@@ -250,10 +283,24 @@ namespace AoC19
 
             public override void Execute() 
             {            
-                int value1 = ValueFromParameter(1);
-                int value2 = ValueFromParameter(2);
+                long value1 = ValueFromParameter(1);
+                long value2 = ValueFromParameter(2);
 
-                memory[RawParameter(3)] = value1 == value2 ? 1 : 0;
+                memory[AddressFromParameter(3)] = value1 == value2 ? 1 : 0;
+            }
+        }
+
+        class RelativeBaseOffset : Instruction 
+        {
+            public RelativeBaseOffset(IntCodeComputer computer, int opCode)
+                : base(computer, opCode, 1)
+            {}
+
+            public override void Execute() 
+            {            
+                long value1 = ValueFromParameter(1);
+
+                computer.relativeBase += value1;
             }
         }
 
@@ -264,9 +311,9 @@ namespace AoC19
 
             public override void Execute() {}
 
-            public override int IncreasePointer()
+            public override long IncreasePointer()
             {
-                return int.MaxValue;
+                return -1;
             }
         }
     }
