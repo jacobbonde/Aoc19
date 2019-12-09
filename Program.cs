@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace AoC19
 {
@@ -10,13 +11,19 @@ namespace AoC19
             Console.WriteLine("# ADVENT OF CODE 2019 #");
             Console.WriteLine();
 
-            // Day1();
-            // Day2();
+            var sw = new Stopwatch();
+            sw.Start();
+
+            Day1();
+            Day2();
             // Day3();
-            // Day3C();
-            // Day4();
-            // Day5();
+            Day3C();
+            Day4();
+            Day5();
             Day6();
+            
+            sw.Stop();
+            Console.WriteLine($"Total Time: {sw.ElapsedMilliseconds}");
         }
     
         public static void Day1()
