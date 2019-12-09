@@ -1,20 +1,33 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AoC19
 {
     public class IntCodeComputer
     {
-        private static int Input;
+        private Queue<int> InitialInput;
+        private BlockingCollection<int> Input;
+        public BlockingCollection<int> Output;
+        private int[] memory;
+        private int instructionPointer;
 
-        public static (int, int[]) Run(int[] program, int input)
+        public IntCodeComputer(BlockingCollection<int> input = null, BlockingCollection<int> output = null)
         {
-            Input = input;
+            Input = input ?? new BlockingCollection<int>();
+            Output = output ?? new BlockingCollection<int>();
+            
+        }
+
+        public (int, int[]) Run(int[] program, params int[] input)
+        {
+            InitialInput = new Queue<int>(input);
 
             int programLength = program.Length;
-            var memory = new int[programLength];
+            memory = new int[programLength];
             Array.Copy(program, memory, program.Length);
 
-            int instructionPointer = 0;
             while(instructionPointer < programLength)
             {
                 var instruction = GetInstruction(memory, instructionPointer);
@@ -25,7 +38,7 @@ namespace AoC19
            return (memory[0], memory);
         }
 
-        private static Instruction GetInstruction(int[] memory, int instructionPointer)
+        private Instruction GetInstruction(int[] memory, int instructionPointer)
         {
             int opCode = memory[instructionPointer];
 
@@ -34,23 +47,23 @@ namespace AoC19
             switch (intructionCode)
                 {
                     case  1:
-                        return new Add(memory, instructionPointer, opCode);
+                        return new Add(this, opCode);
                     case 2:
-                        return new Multiply(memory, instructionPointer, opCode);
+                        return new Multiply(this, opCode);
                     case 3:
-                        return new Store(memory, instructionPointer, opCode);
+                        return new Store(this, opCode);
                     case 4:
-                        return new Retrieve(memory, instructionPointer, opCode);
+                        return new Retrieve(this, opCode);
                     case 5:
-                        return new JumpIfTrue(memory, instructionPointer, opCode);
+                        return new JumpIfTrue(this, opCode);
                     case 6:
-                        return new JumpIfFalse(memory, instructionPointer, opCode);
+                        return new JumpIfFalse(this, opCode);
                     case 7:
-                        return new LessThan(memory, instructionPointer, opCode);
+                        return new LessThan(this, opCode);
                     case 8:
-                        return new EqualTo(memory, instructionPointer, opCode);
+                        return new EqualTo(this, opCode);
                     case 99:
-                        return new Halt();
+                        return new Halt(this);
                     default:
                     throw new InvalidOperationException($"Got instruction code {intructionCode} from {opCode} at intruction pointer {instructionPointer}");
                 }
@@ -59,15 +72,16 @@ namespace AoC19
 
         abstract class Instruction 
         {
+            protected IntCodeComputer computer;
             protected int[] memory;
-            protected int instructionPointer;
-
+            protected int instructionPointer;   
             protected int[] parameters;
             protected int[] parameterModes;
-            public Instruction(int[] memory, int instructionPointer, int opCode, int numberOfParameters)
+            public Instruction(IntCodeComputer computer, int opCode, int numberOfParameters)
             {
-                this.memory = memory;
-                this.instructionPointer = instructionPointer;
+                this.computer = computer;
+                this.memory = computer.memory;
+                this.instructionPointer = computer.instructionPointer;
 
                 this.parameterModes = new[] 
                 {
@@ -109,8 +123,8 @@ namespace AoC19
         {
             private const int NumberOfParameters = 3;
 
-            public Add(int[] memory, int instructionPointer, int opCode)
-                : base(memory, instructionPointer, opCode, NumberOfParameters)
+            public Add(IntCodeComputer computer, int opCode)
+                : base(computer, opCode, NumberOfParameters)
             {}
 
             public override void Execute() 
@@ -126,8 +140,8 @@ namespace AoC19
         {
             private const int NumberOfParameters = 3;
 
-            public Multiply(int[] memory, int instructionPointer, int opCode)
-                : base(memory, instructionPointer, opCode, NumberOfParameters)
+            public Multiply(IntCodeComputer computer, int opCode)
+                : base(computer, opCode, NumberOfParameters)
             {}
 
             public override void Execute() 
@@ -143,28 +157,35 @@ namespace AoC19
         {
             private const int NumberOfParameters = 1;
 
-            public Store(int[] memory, int instructionPointer, int opCode)
-                : base(memory, instructionPointer, opCode, NumberOfParameters)
+            public Store(IntCodeComputer computer, int opCode)
+                : base(computer, opCode, NumberOfParameters)
             {}
 
             public override void Execute() 
             {
-                    int v = RawParameter(1);
-                    memory[v] = Input;
+                Console.WriteLine($"{Task.CurrentId} waiting for input");
+                int address = RawParameter(1);
+                int inputValue;
+                if(!computer.InitialInput.TryDequeue(out inputValue))
+                {
+                    inputValue = computer.Input.Take();
+                }
+                memory[address] = inputValue;
             }
         }
         class Retrieve : Instruction 
         {
             private const int NumberOfParameters = 1;
 
-            public Retrieve(int[] memory, int instructionPointer, int opCode)
-                : base(memory, instructionPointer, opCode, NumberOfParameters)
+            public Retrieve(IntCodeComputer computer, int opCode)
+                : base(computer, opCode, NumberOfParameters)
             {}
 
             public override void Execute() 
             {
                 var output = memory[RawParameter(1)];
-                Console.WriteLine($"Output: {output}");
+                computer.Output.Add(output);
+                //Console.WriteLine($"Output: {output}");
             }
         }
 
@@ -172,8 +193,8 @@ namespace AoC19
         {
             private const int NumberOfParameters = 2;
 
-            public JumpIfTrue(int[] memory, int instructionPointer, int opCode)
-            : base(memory, instructionPointer, opCode, NumberOfParameters)
+            public JumpIfTrue(IntCodeComputer computer, int opCode)
+            : base(computer, opCode, NumberOfParameters)
             {}
 
             public override void Execute() 
@@ -190,8 +211,8 @@ namespace AoC19
 
         class JumpIfFalse : Instruction 
         {
-            public JumpIfFalse(int[] memory, int instructionPointer, int opCode)
-            : base(memory, instructionPointer, opCode, 2)
+            public JumpIfFalse(IntCodeComputer computer, int opCode)
+            : base(computer, opCode, 2)
             {}
 
             public override void Execute() 
@@ -208,8 +229,8 @@ namespace AoC19
 
         class LessThan : Instruction 
         {
-            public LessThan(int[] memory, int instructionPointer, int opCode)
-                : base(memory, instructionPointer, opCode, 3)
+            public LessThan(IntCodeComputer computer, int opCode)
+                : base(computer, opCode, 3)
             {}
 
             public override void Execute() 
@@ -223,8 +244,8 @@ namespace AoC19
 
         class EqualTo : Instruction 
         {
-            public EqualTo(int[] memory, int instructionPointer, int opCode)
-                : base(memory, instructionPointer, opCode, 3)
+            public EqualTo(IntCodeComputer computer, int opCode)
+                : base(computer, opCode, 3)
             {}
 
             public override void Execute() 
@@ -238,7 +259,7 @@ namespace AoC19
 
         class Halt : Instruction 
         {
-            public Halt() : base(null, 0, 0, 0)
+            public Halt(IntCodeComputer computer) : base(computer, 0, 0)
             {}
 
             public override void Execute() {}
