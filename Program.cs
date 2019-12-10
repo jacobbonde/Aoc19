@@ -23,7 +23,8 @@ namespace AoC19
             // Day6();
             //Day7();
             //Day8();
-            Day9();
+            //Day9();
+            Day10();
 
             sw.Stop();
             Console.WriteLine($"Total Time: {sw.ElapsedMilliseconds}");
@@ -200,6 +201,17 @@ namespace AoC19
 
             //AoC19.Day9.Part1(program);
             AoC19.Day9.Part2(program);
+            Console.WriteLine();
+        }
+
+        public static void Day10()
+        {
+            Console.WriteLine("##### DAY 910 #####");
+            //string[] input = Input.ReadStringLines("day10-input.txt");
+            string[] input = Input.ReadStringLines("day10-test1.txt");
+
+            AoC19.Day10.Part1(input);
+            //AoC19.Day9.Part2(program);
             Console.WriteLine();
         }
     }
