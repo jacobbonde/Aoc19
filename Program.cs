@@ -206,12 +206,12 @@ namespace AoC19
 
         public static void Day10()
         {
-            Console.WriteLine("##### DAY 910 #####");
-            //string[] input = Input.ReadStringLines("day10-input.txt");
-            string[] input = Input.ReadStringLines("day10-test1.txt");
+            Console.WriteLine("##### DAY 10 #####");
+            string[] input = Input.ReadStringLines("day10-input.txt");
+            //string[] input = Input.ReadStringLines("day10-test1.txt");
 
             AoC19.Day10.Part1(input);
-            //AoC19.Day9.Part2(program);
+            AoC19.Day10.Part2(input);
             Console.WriteLine();
         }
     }
