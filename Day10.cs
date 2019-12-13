@@ -31,6 +31,7 @@ namespace AoC19
             RelativePosition[] mapVisible = null;
             foreach (var asteroid in map)
             {
+
                 var mapRelativeToAsteroid = map.Where(a => a != asteroid).Select(a => new RelativePosition(asteroid, a)).ToArray();
                 var visible = mapRelativeToAsteroid.Distinct(new RelativePosition.LineOfSightAngleComparer()).ToArray();
                 if (visible.Length > maxVisible)
