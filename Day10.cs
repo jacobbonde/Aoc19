@@ -28,9 +28,9 @@ namespace AoC19
             int maxVisible = int.MinValue;
             foreach (var asteroid in map)
             {
-                var reldir = map.Where(a => a != asteroid).Select(a => new Direction(asteroid, a)).ToArray();
-                var visible = reldir.Distinct().ToArray();
-                maxVisible = Math.Max(maxVisible, visible.Length);
+                // var reldir = map.Where(a => a != asteroid).Select(a => new Direction(asteroid, a)).ToArray();
+                // var visible = reldir.Distinct().ToArray();
+                // maxVisible = Math.Max(maxVisible, visible.Length);
             }
                 
 

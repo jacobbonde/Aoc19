@@ -24,7 +24,9 @@ namespace AoC19
             //Day7();
             //Day8();
             //Day9();
-            Day10();
+            //Day10();
+            //Day11();
+            Day12();
 
             sw.Stop();
             Console.WriteLine($"Total Time: {sw.ElapsedMilliseconds}");
@@ -212,6 +214,46 @@ namespace AoC19
 
             AoC19.Day10.Part1(input);
             //AoC19.Day9.Part2(program);
+            Console.WriteLine();
+        }
+
+        public static void Day11()
+        {
+            Console.WriteLine("##### DAY 11 #####");
+            long[] program = Input.ReadLongSeparated("day11-input.txt", ',');
+
+             //int[] part1Test1 = new[] {109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99};
+
+             //int[] part1Test2 = new[] {1102,34915192,34915192,7,4,7,99,0};
+             //long[] part1Test3 = new[] {104,1125899906842624,99};
+            //int[] eqImmTest = new[] {3,3,1108,-1,8,3,4,3,99};
+            //int[] ltImmTest = new[] {3,3,1107,-1,8,3,4,3,99};
+
+            // int[] jumpPosTest = new[] {3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9};
+            // int[] jumpImmTest = new[] {3,3,1105,-1,9,1101,0,0,12,4,12,99,1};
+
+            AoC19.Day11.Part1(program);
+            //AoC19.Day11.Part2(program);
+            Console.WriteLine();
+        }
+
+        public static void Day12()
+        {
+            Console.WriteLine("##### DAY 12 #####");
+            string[] input = Input.ReadStringLines("day12-input.txt");
+
+             //int[] part1Test1 = new[] {109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99};
+
+             //int[] part1Test2 = new[] {1102,34915192,34915192,7,4,7,99,0};
+             //long[] part1Test3 = new[] {104,1125899906842624,99};
+            //int[] eqImmTest = new[] {3,3,1108,-1,8,3,4,3,99};
+            //int[] ltImmTest = new[] {3,3,1107,-1,8,3,4,3,99};
+
+            // int[] jumpPosTest = new[] {3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9};
+            // int[] jumpImmTest = new[] {3,3,1105,-1,9,1101,0,0,12,4,12,99,1};
+
+            AoC19.Day12.Part1(input);
+            //AoC19.Day12.Part2(program);
             Console.WriteLine();
         }
     }
